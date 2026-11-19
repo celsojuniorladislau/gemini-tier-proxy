@@ -1,0 +1,16 @@
+[Unit]
+Description=Gemini Tier Proxy (FLEX mode)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart={{NODE_BIN}} {{PROXY_PATH}}
+Restart=on-failure
+RestartSec=3s
+Environment=PORT=8787
+Environment=SERVICE_TIER=FLEX
+Environment=AUTO_FALLBACK=true
+Environment=TIMEOUT_MS=900000
+
+[Install]
+WantedBy=default.target

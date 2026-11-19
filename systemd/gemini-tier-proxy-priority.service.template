@@ -1,0 +1,16 @@
+[Unit]
+Description=Gemini Tier Proxy (PRIORITY mode)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart={{NODE_BIN}} {{PROXY_PATH}}
+Restart=on-failure
+RestartSec=3s
+Environment=PORT=8788
+Environment=SERVICE_TIER=PRIORITY
+Environment=AUTO_FALLBACK=false
+Environment=TIMEOUT_MS=900000
+
+[Install]
+WantedBy=default.target

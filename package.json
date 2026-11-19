@@ -1,0 +1,24 @@
+{
+  "name": "gemini-tier-proxy",
+  "version": "1.0.0",
+  "description": "Proxy HTTP local para usar Antigravity CLI (agy) com os modos FLEX e PRIORITY da Google Gemini API",
+  "type": "module",
+  "main": "src/gemini-tier-proxy.mjs",
+  "scripts": {
+    "start": "node src/gemini-tier-proxy.mjs",
+    "check": "node --check src/gemini-tier-proxy.mjs"
+  },
+  "keywords": [
+    "antigravity",
+    "agy",
+    "gemini",
+    "gemini-api",
+    "service-tier",
+    "flex",
+    "priority",
+    "systemd",
+    "proxy"
+  ],
+  "author": "Celso Junior Ladislau",
+  "license": "MIT"
+}
