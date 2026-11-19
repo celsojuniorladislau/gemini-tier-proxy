@@ -5,8 +5,8 @@
   "type": "module",
   "main": "src/gemini-tier-proxy.mjs",
   "scripts": {
-    "start": "node src/gemini-tier-proxy.mjs",
-    "check": "node --check src/gemini-tier-proxy.mjs"
+    "start": "bun src/gemini-tier-proxy.mjs",
+    "check": "bun build src/gemini-tier-proxy.mjs --no-bundle --dry-run > /dev/null"
   },
   "keywords": [
     "antigravity",

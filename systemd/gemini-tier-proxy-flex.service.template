@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart={{NODE_BIN}} {{PROXY_PATH}}
+ExecStart={{BUN_BIN}} {{PROXY_PATH}}
 Restart=on-failure
 RestartSec=3s
 Environment=PORT=8787

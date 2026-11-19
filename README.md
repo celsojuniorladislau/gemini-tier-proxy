@@ -35,7 +35,7 @@ flowchart TD
         W2 -->|Sobe e derruba ao sair| P2["gemini-tier-proxy-priority.service\n(Porta 8788)"]
     end
 
-    subgraph Proxy["Proxy Local Node.js"]
+    subgraph Proxy["Proxy Local (Bun / Node.js)"]
         P1 -->|Injeta serviceTier: 'flex'| UP["Encaminha para Upstream"]
         P1 -.->|Se 503 / 429: Auto-Fallback| FB["Fallback para Standard"]
         P2 -->|Injeta serviceTier: 'priority'| UP
@@ -70,6 +70,9 @@ flowchart TD
 6. **Preservação do OAuth Padrão**:
    - O comando `agy` nativo continua usando a sua conta do Google via OAuth.
    - Os comandos com sufixo (`agy-flex`, `agy-priority`, `agy-standard`, `agy-api`) usam a chave `GEMINI_API_KEY` de forma isolada via CLI arguments.
+7. **Suporte Nativo a Bun (Runtime Recomendado)**:
+   - Suporte nativo ao **Bun** como engine de execução padrão, proporcionando inicialização ultrarrápida (~10-15ms) e menor consumo de RAM (~12-45MB vs ~60MB do Node.js).
+   - Mantém fallback transparente para **Node.js** (>= 18) caso o Bun não esteja instalado na máquina.
 
 ---
 
@@ -85,12 +88,12 @@ Caso você esteja replicando esta arquitetura em outro ambiente, atente-se a est
 > **Solução implementada:** O proxy sempre sanitiza com `.toLowerCase()`.
 
 > [!NOTE]
-> ### 2. Caminho Absoluto do Node.js no systemd
-> O gerenciador de serviços do usuário (`systemd --user`) não carrega o ambiente interativo de ferramentas como NVM, asdf ou fnm. Portanto, nas units do systemd, o `ExecStart` deve apontar para o binário absoluto do Node.js (ex: `/home/user/.nvm/versions/node/vX/bin/node` ou `/usr/bin/node`).
+> ### 2. Caminho Absoluto do Runtime (Bun / Node.js) no systemd
+> O gerenciador de serviços do usuário (`systemd --user`) não herda o ambiente interativo nem variáveis de shell como NVM, asdf, fnm ou `~/.bun/bin`. Portanto, nas units do systemd, o `ExecStart` deve apontar para o binário absoluto do Bun (ex: `/home/user/.bun/bin/bun`) ou Node.js (ex: `/usr/bin/node`), o que o script `install.sh` detecta e configura automaticamente.
 
 > [!TIP]
 > ### 3. Timeouts no Modo FLEX
-> Como a fila FLEX pode enfileirar requisições por vários minutos antes de liberar capacidade de GPU, o servidor HTTP Node.js precisa desativar os timeouts padrão:
+> Como a fila FLEX pode enfileirar requisições por vários minutos antes de liberar capacidade de GPU, o servidor HTTP precisa desativar os timeouts padrão:
 > ```javascript
 > server.requestTimeout = 0;
 > server.headersTimeout = 0;
@@ -103,7 +106,7 @@ Caso você esteja replicando esta arquitetura em outro ambiente, atente-se a est
 
 ### Pré-requisitos
 - Linux (Ubuntu, Debian, Zorin OS, Fedora, etc.) com `systemd --user`.
-- Node.js >= 18 (`node -v`).
+- **Bun** (recomendado para inicialização ultrarrápida em ~10-15ms e menor consumo de RAM) ou **Node.js** >= 18.
 - Antigravity CLI instalado (`agy`).
 - Variável `GEMINI_API_KEY` configurada no seu perfil de shell (`~/.bashrc` ou `~/.zshrc`).
 
@@ -116,7 +119,7 @@ source ~/.bashrc
 ```
 
 O script cuidará de:
-1. Validar a versão e o caminho do Node.js.
+1. Detectar o runtime disponível (priorizando Bun nativamente, com fallback transparente para Node.js >= 18).
 2. Copiar o script para `~/.local/share/gemini-tier-proxy/`.
 3. Gerar e recarregar os serviços `gemini-tier-proxy-flex.service` e `gemini-tier-proxy-priority.service` no `systemd --user`.
 4. Injetar as funções de shell no `~/.bashrc` (ou `~/.zshrc`).
