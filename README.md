@@ -45,7 +45,7 @@ flowchart TD
         UP -->|HTTPS 443| API["generativelanguage.googleapis.com"]
         FB -->|HTTPS 443| API
         OAUTH -->|Direto| API
-        W3 -->|Direto (API Key)| API
+        W3 -->|Direto via API Key| API
     end
 ```
 
